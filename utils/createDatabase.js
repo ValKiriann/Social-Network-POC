@@ -12,38 +12,29 @@ let connection = mysql.createConnection({
     connectionLimit: 10,
     host: MYSQL_HOST,
     user: MYSQL_ADMIN_USER,
-    password: MYSQL_ADMIN_PASSWORD
+    password: MYSQL_ADMIN_PASSWORD,
+    multipleStatements: true
 });
 
 connection = connection.promise();
 
 let createDatabase = async () => {
-    const [createSchemaRows] = await connection.query(`CREATE DATABASE IF NOT EXISTS ${MYSQL_SCHEMA} 
+    console.info('[STARTING]: Creating Schema');
+    const createSchema = await connection.query(`CREATE DATABASE IF NOT EXISTS ${MYSQL_SCHEMA} 
         DEFAULT CHARACTER SET = "utf8"`);
-    const [createUserRows] = await connection.query(`CREATE USER "${MYSQL_USER}"@"${MYSQL_HOST}" 
-        IDENTIFIED BY "${MYSQL_USER_PASSWORD}"`)
+    console.info("[FINISHED] - Database was created");
+    console.info('[STARTING]: Creating mysql user');
+    const createUser = await connection.query(`CREATE USER "${MYSQL_USER}"@"${MYSQL_HOST}" 
+        IDENTIFIED BY "${MYSQL_USER_PASSWORD}";
+        GRANT SHOW DATABASES ON *.* TO "${MYSQL_USER}"@"${MYSQL_HOST}";
+        GRANT CREATE, SELECT, DELETE, UPDATE ON ${MYSQL_SCHEMA}.* TO "${MYSQL_USER}"@"${MYSQL_HOST}";
+        FLUSH PRIVILEGES;`);
+    console.log('[FINISHED]: API user was created');
+    connection.destroy();
 }
 createDatabase().catch((error) => {
     console.error(`[ERROR]: ${error.code} - ${error.message}`);
     connection.destroy();
 })
-
-/*
-connection.query(`CREATE USER "${MYSQL_USER}"@"${MYSQL_HOST}" IDENTIFIED BY "${MYSQL_USER_PASSWORD}"`, (error, rows, fields) => {
-    if(error) throw error;
-    console.info('The user was created');
-});
-*/
-/*
-connection.query(`CREATE USER "${MYSQL_USER}"@"${MYSQL_HOST}" IDENTIFIED BY "${MYSQL_USER_PASSWORD}"`)
-    .then((error, rows, fields) => {
-        if(error) throw error;
-        console.info('The user was created');
-    })
-    .catch((error) => {
-        console.log(error);
-        connection.destroy();
-    })
-*/
 
 
