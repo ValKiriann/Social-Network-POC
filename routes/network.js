@@ -3,7 +3,6 @@ const router = express.Router();
 const responseUtils = require('../utils/response.utils');
 const {name} = require("../package.json");
 const {port} = require('../config.json');
-const talkController = require('../controllers/talks.controller');
 
 router.get('/', function(req,res){ 
     responseUtils.success(req,res,`Module ${name} is up at ${port}`,200);
