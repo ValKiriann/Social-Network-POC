@@ -20,7 +20,7 @@ const userDetails = {
     created_at: new Date(25,5,2020),
     updated_at: new Date(25,5,2020),
     deleted_at:null
-}
+};
 const errors = {
     notFound: {
         statusCode: 404,
@@ -41,29 +41,44 @@ const errors = {
 
 describe('Get User Details Test', () => {
     test('The service recieves a userId without filters to search for a user', () => {
-        usersRepository.getUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([userDetails]));
         return expect(usersService.getUserDetails(userId)).resolves.toEqual(userDetails);
     });
     test('No user found', () => {
-        usersRepository.getUserDetails.mockResolvedValueOnce(Promise.resolve(undefined));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve(undefined));
         return expect(usersService.getUserDetails(userId)).rejects.toEqual(errors.notFound)
     });
     test('Internal error', () => {
-        usersRepository.getUserDetails.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
         return expect(usersService.getUserDetails(userId)).rejects.toEqual(errors.internalError)
+    });
+});
+
+describe('Get User By Email Test', () => {
+    test('The service recieves an email to check - Registered', () => {
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([userDetails]));
+        return expect(usersService.getUserbyEmail(userId)).resolves.toEqual(true);
+    });
+    test('The service recieves an email to check - Unregistered', () => {
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve(undefined));
+        return expect(usersService.getUserbyEmail(userId)).resolves.toEqual(false)
+    });
+    test('Internal error', () => {
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
+        return expect(usersService.getUserbyEmail(userId)).rejects.toEqual(errors.internalError)
     });
 });
 
 describe('Create Northern User Test', () => {
     test('The service recieves user details to create a new record', () => {
         usersRepository.createNorthernUser.mockResolvedValueOnce(Promise.resolve(userId));
-        usersRepository.getUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([userDetails]));
         return expect(usersService.createNorthernUser(username, email, password, latitude, longitude, language))
             .resolves.toEqual(userDetails);
     });
     test('Internal error', () => {
         usersRepository.createNorthernUser.mockResolvedValueOnce(Promise.resolve(userId));
-        usersRepository.getUserDetails.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
         return expect(usersService.createNorthernUser(username, email, password, latitude, longitude, language))
             .rejects.toEqual(errors.internalError)
     });

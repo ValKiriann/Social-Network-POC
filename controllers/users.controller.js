@@ -21,6 +21,7 @@ exports.createUser = async (params) => {
     let {username, email, password, password2, latitude, longitude, language} = params;
     // TODO: PARAM VALIDATION --> express-validator?
     if(!username || !email || !password || !password2 || !latitude || !longitude || !language) {
+        console.error(`[ERROR] Missing params`);
         throw({
             statusCode: 400,
             errorCode: "Invalid params",
@@ -28,6 +29,7 @@ exports.createUser = async (params) => {
         })
     };
     if(password != password2) {
+        console.error(`[ERROR] Entered passwords dont match`);
         throw({
             statusCode: 400,
             errorCode: "Invalid params",
@@ -35,6 +37,15 @@ exports.createUser = async (params) => {
         })
     }
     let hemisphere = await usersService.calculateHemisphere(latitude, longitude);
+    let userFound = await usersService.getUserbyEmail(email);
+    if(userFound) {
+        console.error(`[ERROR] Email is already registered`);
+        throw({
+            statusCode: 400,
+            errorCode: "Already registered",
+            errorData: "Email is already in use"
+        })
+    }
     let insert = hemisphere == "N" 
         ? await usersService.createNorthernUser(username, email, password, latitude, longitude, language) 
         : await usersService.createSouthernUser(username, email, password, latitude, longitude, language);

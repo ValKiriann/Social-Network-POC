@@ -47,6 +47,11 @@ const errors = {
         statusCode: 400,
         errorCode: "Invalid params",
         errorData: "Entered passwords don't match"
+    },
+    alreadyRegistered: {
+        statusCode: 400,
+        errorCode: "Already registered",
+        errorData: "Email is already in use"
     }
 }
 
@@ -77,18 +82,26 @@ describe('Create a user', () => {
             .rejects.toEqual(errors.invalidPassword)
     });
     test("Invalid coordinates", () => {
-        usersService.calculateHemisphere.mockResolvedValueOnce(Promise.reject(errors.invalidCoordinates))
+        usersService.calculateHemisphere.mockResolvedValueOnce(Promise.reject(errors.invalidCoordinates));
         return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language}))
             .rejects.toEqual(errors.invalidCoordinates)
     });
+    test("User already registered", () => {
+        usersService.calculateHemisphere.mockResolvedValueOnce(Promise.resolve("N"));
+        usersService.getUserbyEmail.mockResolvedValueOnce(Promise.resolve(true));
+        return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language}))
+            .rejects.toEqual(errors.alreadyRegistered)
+    });
     test("The controller receives the information to create a Northern user", () => {
         usersService.calculateHemisphere.mockResolvedValueOnce(Promise.resolve("N"));
+        usersService.getUserbyEmail.mockResolvedValueOnce(Promise.resolve(false));
         usersService.createNorthernUser.mockResolvedValueOnce(userDetails)
         return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language}))
             .resolves.toEqual(userDetails)
     });
     test("The controller receives the information to create a Southern user", () => {
         usersService.calculateHemisphere.mockResolvedValueOnce(Promise.resolve("S"));
+        usersService.getUserbyEmail.mockResolvedValueOnce(Promise.resolve(false));
         usersService.createSouthernUser.mockResolvedValueOnce(userDetails)
         return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language}))
             .resolves.toEqual(userDetails)

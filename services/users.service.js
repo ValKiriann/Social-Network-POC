@@ -1,7 +1,7 @@
 const usersRepository = require('../repositories/users.repository.js');
 
 exports.getUserDetails = (userId) => {
-    return usersRepository.getUserDetails(userId)
+    return usersRepository.getUsers([['id', userId]], 'false', 1)
         .then((userDetails) => {
             if(!userDetails) {
                 throw({
@@ -10,8 +10,7 @@ exports.getUserDetails = (userId) => {
                     errorData: "No user found"
                 });
             }
-            console.info('[FINISHED] Get User Details');
-            return userDetails;
+            return userDetails[0];
         })
         .catch((error) => {
             if(error.statusCode && error.statusCode == 404) {
@@ -29,9 +28,28 @@ exports.getUserDetails = (userId) => {
         })
 };
 
-exports.createNorthernUser = (username, email, password, latitude, longitude, language) => {
+exports.getUserbyEmail = (email) => {
+    return usersRepository.getUsers([['email', email]], 'false', 1)
+        .then((userDetails) => {
+            if(!userDetails) {
+                return false
+            }
+            return true
+        })
+        .catch((error) => {
+            if(error.code && error.message) {
+                console.error(`[ERROR] ${error.code} - ${error.message}`)
+            } else { console.error(`[ERROR] ${error}`) }
+            throw({
+                statusCode: 500,
+                errorCode: "Internal Error",
+                errorData: "Contact administrator"
+            })
+        })
+}
+
+exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
     //TODO: hash the password
-    //TODO: check if user already exists!! --> by email
     return usersRepository.createNorthernUser(username, email, password, latitude, longitude, language)
         .then((userId) => {
             console.info('[FINISHED] Northern User Created');

@@ -4,11 +4,22 @@ const baseRepository = require('./base.repository');
 let connection = baseRepository.getConnection();
 // IMPROVE: ATOMIC base repository functions
 
-exports.getUserDetails = async (userId) => {
-    console.info('[STARTING] Get User Details');
-    const [rows, fields] = await connection.query(`SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}
-        WHERE id = ${userId} and deleted_at IS NULL LIMIT 1;`);
-    return rows[0];    
+exports.getUsers = async (filters, deleted, limit) => {
+    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}`
+    if(!query.deleted) {
+        filters.push(['deleted_at', null])
+    }
+    for(let i = 0; i < filters.length; i++) {
+        query += i == 0 ? ' WHERE ' : ' AND '
+        query += filters[i][0] == 'deleted_at' ? `deleted_at IS NULL` : `${filters[i][0]} = "${filters[i][1]}"`
+    }
+    if(limit) {
+        query += ` LIMIT ${limit}`
+    }
+    console.log(query);
+    const [rows, fields] = await connection.query(query);
+    console.info('[FINISHED] Get Users');
+    return rows;
 }
 
 exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
