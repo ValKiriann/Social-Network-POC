@@ -7,13 +7,13 @@ class Response{
    
 }
 
-exports.success = function (req, res, message, status) {
+exports.success = function (res, message, status) {
     let response = new Response(status || 200);
     response.data = message || {};
     res.status(response.statusCode).send(response);
 }
 
-exports.errors = function (req, res, errors) {
+exports.errors = function (res, errors) {
     let response = new Response(0);
     response.data = {};
 
