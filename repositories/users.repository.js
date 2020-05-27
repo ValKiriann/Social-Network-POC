@@ -6,8 +6,8 @@ let connection = baseRepository.getConnection();
 
 exports.getUserDetails = async (userId) => {
     console.info('[STARTING] Get User Details');
-    const [rows, fields] = await connection.query(`SELECT id, username, created_at, updated_at, deleted_at, lat, lon FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}
-        WHERE id = ${userId} and deleted_at IS NULL;`);
+    const [rows, fields] = await connection.query(`SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}
+        WHERE id = ${userId} and deleted_at IS NULL LIMIT 1;`);
     return rows[0];    
 }
 

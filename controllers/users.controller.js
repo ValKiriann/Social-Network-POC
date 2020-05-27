@@ -4,6 +4,7 @@ const usersService = require('../services/users.service');
 // IMPROVE: if admin, check for query param deleted = true to return deleted users*
 exports.getUserDetails = async (userId) => {
     if(!userId || isNaN(userId)) {
+        //TODO: search it in third party api --when no results found
         throw({
             statusCode: 400,
             errorCode: "Invalid params",
@@ -36,7 +37,6 @@ exports.createUser = async (params) => {
     let hemisphere = await usersService.calculateHemisphere(latitude, longitude);
     let insert = hemisphere == "N" 
         ? await usersService.createNorthernUser(username, email, password, latitude, longitude, language) 
-        : await usersService.createSouthernUser(params);
-    console.info('[FINISHED] User Created');
+        : await usersService.createSouthernUser(username, email, password, latitude, longitude, language);
     return insert;
 }

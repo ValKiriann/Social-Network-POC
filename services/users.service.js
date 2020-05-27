@@ -10,6 +10,7 @@ exports.getUserDetails = (userId) => {
                     errorData: "No user found"
                 });
             }
+            console.info('[FINISHED] Get User Details');
             return userDetails;
         })
         .catch((error) => {
@@ -30,9 +31,12 @@ exports.getUserDetails = (userId) => {
 
 exports.createNorthernUser = (username, email, password, latitude, longitude, language) => {
     //TODO: hash the password
-    //TODO: check if user already exists!!
+    //TODO: check if user already exists!! --> by email
     return usersRepository.createNorthernUser(username, email, password, latitude, longitude, language)
-        //TODO: return the inserted object (by calling get method)
+        .then((userId) => {
+            console.info('[FINISHED] Northern User Created');
+            return this.getUserDetails(userId)
+        })
         .catch((error) => {
             if(error.code && error.message) {
                 console.error(`[ERROR] ${error.code} - ${error.message}`)
@@ -45,10 +49,23 @@ exports.createNorthernUser = (username, email, password, latitude, longitude, la
         })
 };
 
-exports.createSouthernUser = (params) => { 
+exports.createSouthernUser = (username, email, password, latitude, longitude, language) => { 
     return new Promise((resolve, reject) => {
         console.info('[STARTING] Creating Southern user');
-        setTimeout(() => { resolve(); }, 1000);
+        // ASSUMPTIONS: we want our API to be consistent, we should return THE SAME as if we are storing the user ourserlfs
+        setTimeout(() => { 
+            console.info('[FINISHED] Southern User Created');
+            resolve({
+                username,
+                email,
+                latitude,
+                longitude,
+                language,
+                created_at: new Date(),
+                updated_at: new Date(),
+                deleted_at: null
+            }); 
+        }, 1000);
     });
 };
 
