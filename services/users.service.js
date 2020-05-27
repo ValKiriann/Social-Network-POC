@@ -1,26 +1,53 @@
 const usersRepository = require('../repositories/users.repository.js');
 
-exports.createNorthernUser = (username, email, password, lat, lon) => {
-    //TODO: hash the password
-    //TODO: check if user already exists!!
-    return usersRepository.createNorthernUser(username, email, password, lat, lon)
-        .then((insertedId) => {
-            //TODO: return the inserted object (by calling get method)
-            console.info('[FINISHED] Creating user');
-            return insertedId;
+exports.getUserDetails = (userId) => {
+    return usersRepository.getUserDetails(userId)
+        .then((userDetails) => {
+            if(!userDetails) {
+                throw({
+                    statusCode: 404,
+                    errorCode: "User not found",
+                    errorData: "No user found"
+                });
+            }
+            return userDetails;
         })
         .catch((error) => {
-            console.error(`[ERROR] ${error.code} - ${error.message}`)
+            if(error.statusCode && error.statusCode == 404) {
+                console.error(`[ERROR] No user found for ${userId} id filter`)
+                throw error;
+            }
+            if(error.code && error.message) {
+                console.error(`[ERROR] ${error.code} - ${error.message}`)
+            } else { console.error(`[ERROR] ${error}`) }
             throw({
                 statusCode: 500,
                 errorCode: "Internal Error",
                 errorData: "Contact administrator"
             })
         })
-}
+};
+
+exports.createNorthernUser = (username, email, password, lat, lon) => {
+    //TODO: hash the password
+    //TODO: check if user already exists!!
+    return usersRepository.createNorthernUser(username, email, password, lat, lon)
+        //TODO: return the inserted object (by calling get method)
+        .catch((error) => {
+            if(error.code && error.message) {
+                console.error(`[ERROR] ${error.code} - ${error.message}`)
+            } else { console.error(`[ERROR] ${error}`) }
+            throw({
+                statusCode: 500,
+                errorCode: "Internal Error",
+                errorData: "Contact administrator"
+            })
+        })
+};
 
 exports.createSouthernUser = (params) => { 
     return new Promise((resolve, reject) => {
+        console.info('[STARTING] Creating Southern user');
         setTimeout(() => { resolve(); }, 1000);
     });
 };
@@ -35,6 +62,7 @@ exports.calculateHemisphere = (latitude, longitude) => {
                 && longitude >= -180 && longitude <= 180){
                 resolve('S');
             } else {
+                console.error(`[ERROR] Invalid coordinates`);
                 reject({
                     statusCode: 400,
                     errorCode: "Invalid params",

@@ -21,6 +21,15 @@ router.post('/test/body', function(req,res){
     }
 });
 
+//TODO: jsonwebtoken login
+//TODO: get of all users (with filter options for search) --> we need this to check if a user is already in our system. (add deleted filter for admins)
+router.get('/user/:id', function(req,res){
+    //should use jsonwebtokenlogin
+    return usersController.getUserDetails(req.params.id)
+        .then(data => responseUtils.success(req, res, data))
+        .catch(error => responseUtils.errors(req, res, error))
+});
+
 router.post('/user', function(req,res){
     return usersController.createUser(req.body)
         .then(data => responseUtils.success(req, res, data))

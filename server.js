@@ -9,3 +9,10 @@ app.use(router);
 app.listen(port);
 
 console.log(`Listening to http://localhost:${port}`);
+
+//TODO: jest
+//TODO: docker compose
+//TODO: edit readme describing the asumptions
+//TODO: split the router
+//TODO: create a logging util
+//TODO: create an error class??
