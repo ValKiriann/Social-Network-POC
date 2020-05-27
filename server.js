@@ -1,11 +1,11 @@
 const express = require ('express');
 const bodyParser = require('body-parser');
 const {port} = require('./config.json');
-const router = require('./routes/network');
+const router = require('./routes/network').routes;
 
 let app = express();
 app.use(bodyParser.json({ extended: false }));
-app.use(router);
+router(app);
 app.listen(port);
 
 console.log(`Listening to http://localhost:${port}`);

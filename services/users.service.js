@@ -3,7 +3,7 @@ const usersRepository = require('../repositories/users.repository.js');
 exports.getUserDetails = (userId, deleted = false) => {
     return usersRepository.getUsers([['id', userId]], deleted, 1)
         .then((userDetails) => {
-            if(!userDetails) {
+            if(userDetails.length == 0) {
                 throw({
                     statusCode: 404,
                     errorCode: "User not found",
