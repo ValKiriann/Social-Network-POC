@@ -118,7 +118,7 @@ describe('Update User Details', () => {
     test('The service recieves the update values and userId to edit', () => {
         usersRepository.updateUserDetails.mockResolvedValueOnce(Promise.resolve('updated'));
         usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([userDetails]));
-        return expect(usersService.updateUserDetails(userId,{username:username})).resolves.toEqual(userDetails);
+        return expect(usersService.updateUserDetails(userId,{username:username})).resolves.toEqual('updated');
     });
     test('Internal Error', () => {
         usersRepository.updateUserDetails.mockResolvedValueOnce(Promise.reject('Something happened'));
