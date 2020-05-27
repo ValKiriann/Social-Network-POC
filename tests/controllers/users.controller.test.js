@@ -107,3 +107,19 @@ describe('Create a user', () => {
             .resolves.toEqual(userDetails)
     });
 });
+
+describe('Update a user', () => {
+    test('Missing body', () => {
+        usersService.findValidUpdateValuesSync.mockReturnValue([]);
+        return expect(usersController.updateUserDetails(userId,{})).rejects.toEqual(errors.invalidParams)
+    });
+    test('Body with invalid params', () => {
+        usersService.findValidUpdateValuesSync.mockReturnValue([]);
+        return expect(usersController.updateUserDetails(userId,{ hello: "world" })).rejects.toEqual(errors.invalidParams)
+    });
+    test('Body with valid params', () => {
+        usersService.findValidUpdateValuesSync.mockReturnValue([['username', username]]);
+        usersService.updateUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails));
+        return expect(usersController.updateUserDetails(userId,{username})).resolves.toEqual(userDetails)
+    });
+});

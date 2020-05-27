@@ -15,7 +15,26 @@ exports.getUserDetails = async (userId) => {
     // CONCER: is it email a private field?
     let userDetails = await usersService.getUserDetails(userId);
     return userDetails;
-}
+};
+
+exports.updateUserDetails = async (userId, updateParams) => {
+    let updateValues = usersService.findValidUpdateValuesSync(updateParams);
+    console.log(updateValues);
+    console.log(updateParams)
+    console.log(Object.keys(updateParams).length == 0)
+    console.log("UPDATE VALUES" + JSON.stringify(updateValues))
+    console.log(updateValues.length == 0)
+    if(!updateParams || Object.keys(updateParams).length == 0 || updateValues.length == 0) {
+        console.log('entro')
+        console.error(`[ERROR] Missing params`);
+        throw({
+            statusCode: 400,
+            errorCode: "Invalid params",
+            errorData: "One or more required params are missing"
+        })
+    }
+    return usersService.updateUserDetails(userId, updateValues)
+};
 
 exports.createUser = async (params) => {
     let {username, email, password, password2, latitude, longitude, language} = params;

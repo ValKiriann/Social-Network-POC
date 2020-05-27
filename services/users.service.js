@@ -107,3 +107,31 @@ exports.calculateHemisphere = (latitude, longitude) => {
         }, 700);
     });
 };
+
+exports.findValidUpdateValuesSync = (params) => {
+    let allowedValues = ['username', 'email', 'latitude', 'longitude', 'language']
+    let updateValues = [];
+    for (let i = 0; i < allowedValues.length; i++) {
+        if (params.hasOwnProperty(allowedValues[i])) {
+            updateValues.push([allowedValues[i], params[allowedValues[i]]])
+        }
+    }
+    return updateValues;
+};
+
+exports.updateUserDetails = (userId, updateValues) => {
+    return usersRepository.updateUserDetails(userId, updateValues)
+        .then((updatedInfo) => {
+            return this.getUserDetails(userId)
+        })
+        .catch((error) => {
+            if(error.code && error.message) {
+                console.error(`[ERROR] ${error.code} - ${error.message}`)
+            } else { console.error(`[ERROR] ${error}`) }
+            throw({
+                statusCode: 500,
+                errorCode: "Internal Error",
+                errorData: "Contact administrator"
+            })
+        })
+};

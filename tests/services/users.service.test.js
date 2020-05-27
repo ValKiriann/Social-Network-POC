@@ -98,3 +98,30 @@ describe('Calculate Hemisphere', () => {
             .rejects.toEqual(errors.invalidCoordinates);
     });
 });
+
+describe('Find Update Values', () => {
+    test('The service recieves the body of the request and searchs for valid params - empty body', () => {
+        return expect(usersService.findValidUpdateValuesSync({})).toEqual([]);
+    });
+    test('Body with unknown params', () => {
+        return expect(usersService.findValidUpdateValuesSync({hello:'world'})).toEqual([]);
+    });
+    test('Body with known params', () => {
+        return expect(usersService.findValidUpdateValuesSync({username:username})).toEqual([['username', username]]);
+    });
+    test('Body with mixed params', () => {
+        return expect(usersService.findValidUpdateValuesSync({username:username, hello: 'world'})).toEqual([['username', username]]);
+    });
+});
+
+describe('Update User Details', () => {
+    test('The service recieves the update values and userId to edit', () => {
+        usersRepository.updateUserDetails.mockResolvedValueOnce(Promise.resolve('updated'));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([userDetails]));
+        return expect(usersService.updateUserDetails(userId,{username:username})).resolves.toEqual(userDetails);
+    });
+    test('Internal Error', () => {
+        usersRepository.updateUserDetails.mockResolvedValueOnce(Promise.reject('Something happened'));
+        return expect(usersService.updateUserDetails(userId,{username:username})).rejects.toEqual(errors.internalError);
+    });
+});

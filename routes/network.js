@@ -30,6 +30,14 @@ router.get('/user/:id', function(req,res){
         .catch(error => responseUtils.errors(res, error))
 });
 
+router.patch('/user/:id', function(req,res){
+    //should usejsonwebtokenlogin
+    // CONCERNS: a separate endpoint for the password should be provided for security reasons TODO:
+    return usersController.updateUserDetails(req.params.id, req.body)
+        .then(data => responseUtils.success(res, data))
+        .catch(error => responseUtils.errors(res, error))
+});
+
 router.post('/user', function(req,res){
     return usersController.createUser(req.body)
         .then(data => responseUtils.success(res, data))
