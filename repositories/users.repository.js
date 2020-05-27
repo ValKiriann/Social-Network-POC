@@ -1,18 +1,8 @@
-const mysql = require('mysql2');
 const dotenv = require('dotenv').config();
-const { MYSQL_HOST, MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_SCHEMA, MYSQL_USER_TABLE } = process.env;
-
-let connection = mysql.createConnection({
-    connectionLimit: 10,
-    host: MYSQL_HOST,
-    user: MYSQL_USER,
-    password: MYSQL_USER_PASSWORD,
-    multipleStatements: true
-});
-
+const { MYSQL_SCHEMA, MYSQL_USER_TABLE } = process.env;
+const baseRepository = require('./base.repository');
+let connection = baseRepository.getConnection();
 // IMPROVE: ATOMIC base repository functions
-
-connection = connection.promise();
 
 exports.getUserDetails = async (userId) => {
     console.info('[STARTING] Get User Details');
