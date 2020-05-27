@@ -1,7 +1,7 @@
 const usersRepository = require('../repositories/users.repository.js');
 
-exports.getUserDetails = (userId) => {
-    return usersRepository.getUsers([['id', userId]], 'false', 1)
+exports.getUserDetails = (userId, deleted = false) => {
+    return usersRepository.getUsers([['id', userId]], deleted, 1)
         .then((userDetails) => {
             if(!userDetails) {
                 throw({
@@ -121,9 +121,6 @@ exports.findValidUpdateValuesSync = (params) => {
 
 exports.updateUserDetails = (userId, updateValues) => {
     return usersRepository.updateUserDetails(userId, updateValues)
-        .then((updatedInfo) => {
-            return this.getUserDetails(userId)
-        })
         .catch((error) => {
             if(error.code && error.message) {
                 console.error(`[ERROR] ${error.code} - ${error.message}`)

@@ -106,9 +106,17 @@ describe('Create a user', () => {
         return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language}))
             .resolves.toEqual(userDetails)
     });
+    test('Internal error', () => {
+        usersService.calculateHemisphere.mockResolvedValueOnce(Promise.resolve("S"));
+        usersService.getUserbyEmail.mockResolvedValueOnce(Promise.reject(errors.internalError));
+        return expect(usersController.createUser({username, email, password, password2:password, latitude, longitude, language})).rejects.toEqual(errors.internalError)
+    });
 });
 
 describe('Update a user', () => {
+    test('Invalid userId', () => {
+        return expect(usersController.updateUserDetails(0, {})).rejects.toEqual(errors.invalidParams)
+    });
     test('Missing body', () => {
         usersService.findValidUpdateValuesSync.mockReturnValue([]);
         return expect(usersController.updateUserDetails(userId,{})).rejects.toEqual(errors.invalidParams)
@@ -119,7 +127,28 @@ describe('Update a user', () => {
     });
     test('Body with valid params', () => {
         usersService.findValidUpdateValuesSync.mockReturnValue([['username', username]]);
-        usersService.updateUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails));
+        usersService.updateUserDetails.mockResolvedValueOnce(Promise.resolve('updated'));
+        usersService.getUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails))
         return expect(usersController.updateUserDetails(userId,{username})).resolves.toEqual(userDetails)
+    });
+    test('Internal error', () => {
+        usersService.findValidUpdateValuesSync.mockReturnValue([['username', username]]);
+        usersService.updateUserDetails.mockResolvedValueOnce(Promise.reject(errors.internalError));
+        return expect(usersController.updateUserDetails(userId,{username})).rejects.toEqual(errors.internalError)
+    });
+});
+
+describe('Delete a user', () => {
+    test('Invalid userId', () => {
+        return expect(usersController.deleteUser(0)).rejects.toEqual(errors.invalidParams)
+    });
+    test('Body with valid params', () => {
+        usersService.updateUserDetails.mockResolvedValueOnce(Promise.resolve('updated'));
+        usersService.getUserDetails.mockResolvedValueOnce(Promise.resolve(userDetails))
+        return expect(usersController.deleteUser(userId)).resolves.toEqual(userDetails)
+    });
+    test('Internal error', () => {
+        usersService.updateUserDetails.mockResolvedValueOnce(Promise.reject(errors.internalError));
+        return expect(usersController.deleteUser(userId)).rejects.toEqual(errors.internalError)
     });
 });

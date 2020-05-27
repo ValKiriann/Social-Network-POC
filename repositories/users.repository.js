@@ -5,7 +5,7 @@ let connection = baseRepository.getConnection();
 
 exports.getUsers = async (filters, deleted, limit) => {
     let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}`
-    if(!query.deleted) {
+    if(!deleted) {
         filters.push(['deleted_at', null])
     }
     for(let i = 0; i < filters.length; i++) {
@@ -35,7 +35,6 @@ exports.updateUserDetails = async (userId, updateValues) => {
         query += `${updateValues[i][0]} = "${updateValues[i][1]}"`
     }
     query += ` WHERE id = ${userId} AND deleted_at IS NULL`
-    console.log(query);
     const [rows, fields] = await connection.query(query);
     console.info('[FINISHED] Update user');
     return rows.info;
