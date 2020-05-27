@@ -28,10 +28,10 @@ exports.getUserDetails = (userId) => {
         })
 };
 
-exports.createNorthernUser = (username, email, password, lat, lon) => {
+exports.createNorthernUser = (username, email, password, latitude, longitude, language) => {
     //TODO: hash the password
     //TODO: check if user already exists!!
-    return usersRepository.createNorthernUser(username, email, password, lat, lon)
+    return usersRepository.createNorthernUser(username, email, password, latitude, longitude, language)
         //TODO: return the inserted object (by calling get method)
         .catch((error) => {
             if(error.code && error.message) {

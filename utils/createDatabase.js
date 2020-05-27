@@ -41,8 +41,9 @@ let createDatabase = async () => {
         username VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
-        lat INT NOT NULL,
-        lon INT NOT NULL,
+        latitude INT NOT NULL,
+        longitude INT NOT NULL,
+        language CHAR(3) NOT NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         deleted_at TIMESTAMP NULL DEFAULT NULL

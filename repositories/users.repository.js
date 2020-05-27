@@ -21,10 +21,10 @@ exports.getUserDetails = async (userId) => {
     return rows[0];    
 }
 
-exports.createNorthernUser = async (username, email, password, lat, lon) => {
+exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
     console.info('[STARTING] Creating  Northern user');
     const [rows, fields] = await connection.query(`INSERT INTO ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}
-        (username, email, password, lat, lon)
-        VALUES ("${username}", "${email}", "${password}", "${lat}", "${lon}");`);
+        (username, email, password, latitude, longitude, language)
+        VALUES ("${username}", "${email}", "${password}", "${latitude}", "${longitude}", "${language}");`);
     return rows.insertId;
 };
