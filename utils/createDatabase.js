@@ -5,7 +5,7 @@ and also the user for the API with limited permissions.
 
 const mysql = require('mysql2');
 const dotenv = require('dotenv').config();
-let {MYSQL_HOST, MYSQL_ADMIN_USER, MYSQL_ADMIN_PASSWORD, MYSQL_USER,
+const {MYSQL_HOST, MYSQL_ADMIN_USER, MYSQL_ADMIN_PASSWORD, MYSQL_USER,
     MYSQL_USER_PASSWORD, MYSQL_SCHEMA, MYSQL_USER_TABLE, MYSQL_FRIENDSHIP_TABLE} = process.env;
 
 let connection = mysql.createConnection({
@@ -29,8 +29,8 @@ let createDatabase = async () => {
 
     const createUser = await connection.query(`CREATE USER IF NOT EXISTS "${MYSQL_USER}"@"${MYSQL_HOST}" 
         IDENTIFIED BY "${MYSQL_USER_PASSWORD}";
-        GRANT SHOW DATABASES ON *.* TO "${MYSQL_USER}"@"${MYSQL_HOST}";
-        GRANT CREATE, SELECT, DELETE, UPDATE ON ${MYSQL_SCHEMA}.* TO "${MYSQL_USER}"@"${MYSQL_HOST}";
+        GRANT SHOW DATABASES ON *.* TO "${MYSQL_USER}"@"%" IDENTIFIED BY "${MYSQL_USER_PASSWORD}";
+        GRANT INSERT, SELECT, DELETE, UPDATE ON ${MYSQL_SCHEMA}.* TO "${MYSQL_USER}"@"%";
         FLUSH PRIVILEGES;`);
 
     console.info('[FINISHED] API user was created');
@@ -41,8 +41,12 @@ let createDatabase = async () => {
         username VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         password VARCHAR(255) NOT NULL,
-        lat INT NOT NULL,
-        lon INT NOT NULL
+        latitude INT NOT NULL,
+        longitude INT NOT NULL,
+        language CHAR(3) NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        deleted_at TIMESTAMP NULL DEFAULT NULL
     )ENGINE=INNODB;`);
 
     console.info(`[FINISHED] Table ${MYSQL_USER_TABLE} was created`);
