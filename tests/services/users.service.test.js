@@ -45,7 +45,7 @@ describe('Get User Details Test', () => {
         return expect(usersService.getUserDetails(userId)).resolves.toEqual(userDetails);
     });
     test('No user found', () => {
-        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve(undefined));
+        usersRepository.getUsers.mockResolvedValueOnce(Promise.resolve([]));
         return expect(usersService.getUserDetails(userId)).rejects.toEqual(errors.notFound)
     });
     test('Internal error', () => {
@@ -66,6 +66,21 @@ describe('Get User By Email Test', () => {
     test('Internal error', () => {
         usersRepository.getUsers.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
         return expect(usersService.getUserbyEmail(userId)).rejects.toEqual(errors.internalError)
+    });
+});
+
+describe('Get Users by Id List Test', () => {
+    test('The service recieves string with userIds', () => {
+        usersRepository.getUSersByIdList.mockResolvedValueOnce(Promise.resolve([userDetails, userDetails]));
+        return expect(usersService.getUsersByIdList(userId)).resolves.toEqual([userDetails, userDetails]);
+    });
+    test('No users found', () => {
+        usersRepository.getUSersByIdList.mockResolvedValueOnce(Promise.resolve([]));
+        return expect(usersService.getUsersByIdList(userId)).resolves.toEqual([])
+    });
+    test('Internal error', () => {
+        usersRepository.getUSersByIdList.mockResolvedValueOnce(Promise.reject(new Error('something happened')));
+        return expect(usersService.getUsersByIdList(userId)).rejects.toEqual(errors.internalError)
     });
 });
 

@@ -1,10 +1,10 @@
 const dotenv = require('dotenv').config();
-const { MYSQL_SCHEMA, MYSQL_USER_TABLE } = process.env;
+const { MYSQL_SCHEMA, MYSQL_USERS_TABLE } = process.env;
 const baseRepository = require('./base.repository');
 let connection = baseRepository.getConnection();
 
 exports.getUsers = async (filters, deleted, limit) => {
-    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}`
+    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
     if(!deleted) {
         filters.push(['deleted_at', null])
     }
@@ -22,14 +22,14 @@ exports.getUsers = async (filters, deleted, limit) => {
 
 exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
     console.info('[STARTING] Creating  Northern user');
-    const [rows, fields] = await connection.query(`INSERT INTO ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}
+    const [rows, fields] = await connection.query(`INSERT INTO ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}
         (username, email, password, latitude, longitude, language)
         VALUES ("${username}", "${email}", "${password}", "${latitude}", "${longitude}", "${language}");`);
     return rows.insertId;
 };
 
 exports.updateUserDetails = async (userId, updateValues) => {
-    let query = `UPDATE ${MYSQL_SCHEMA}.${MYSQL_USER_TABLE}`
+    let query = `UPDATE ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
     for(let i = 0; i < updateValues.length; i++) {
         query += i == 0 ? ' SET ' : ', '
         query += `${updateValues[i][0]} = "${updateValues[i][1]}"`
@@ -38,4 +38,13 @@ exports.updateUserDetails = async (userId, updateValues) => {
     const [rows, fields] = await connection.query(query);
     console.info('[FINISHED] Update user');
     return rows.info;
+}
+
+exports.getUSersByIdList = async (idList) => {
+    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
+    query += ` WHERE id in (${idList})`
+    console.log(query)
+    const [rows, fields] = await connection.query(query);
+    console.info('[FINISHED] Get Users List');
+    return rows;
 }
