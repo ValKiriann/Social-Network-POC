@@ -4,7 +4,7 @@ const baseRepository = require('./base.repository');
 let connection = baseRepository.getConnection();
 
 exports.getUsers = async (filters, deleted, limit) => {
-    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
+    let query = `SELECT id, username, email, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
     if(!deleted) {
         filters.push(['deleted_at', null])
     }
@@ -41,7 +41,7 @@ exports.updateUserDetails = async (userId, updateValues) => {
 }
 
 exports.getUSersByIdList = async (idList) => {
-    let query = `SELECT id, username, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
+    let query = `SELECT id, username, email, created_at, updated_at, deleted_at, latitude, longitude, language FROM ${MYSQL_SCHEMA}.${MYSQL_USERS_TABLE}`
     query += ` WHERE id in (${idList})`
     console.log(query)
     const [rows, fields] = await connection.query(query);
