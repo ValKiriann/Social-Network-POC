@@ -1,4 +1,5 @@
 const usersRepository = require('../repositories/users.repository.js');
+const cryptoUtils = require('../utils/crypto.utils'); 
 
 exports.getUserDetails = (userId, deleted = false) => {
     return usersRepository.getUsers([['id', userId]], deleted, 1)
@@ -65,7 +66,7 @@ exports.getUsersByIdList = (idList) => {
 
 
 exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
-    //TODO: hash the password
+    password = cryptoUtils.hashStringMD5(password);
     return usersRepository.createNorthernUser(username, email, password, latitude, longitude, language)
         .then((userId) => {
             console.info('[FINISHED] Northern User Created');

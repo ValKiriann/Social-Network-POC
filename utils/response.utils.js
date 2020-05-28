@@ -18,6 +18,7 @@ exports.errors = function (res, errors) {
     response.data = {};
 
     if (Array.isArray(errors)) {
+        console.error(`[ERROR] ${errors}`)
         for (let i = 0; i < errors.length; i++) {
             response.errors.push({
                 errorCode: errors[i].errorCode,
@@ -36,6 +37,5 @@ exports.errors = function (res, errors) {
             }
         ];
     }   
-    console.error(`[ERROR] ${errors}`)
     res.status(response.statusCode).send(response);
 }
