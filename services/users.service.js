@@ -31,7 +31,7 @@ exports.getUserDetails = (userId, deleted = false) => {
 exports.getUserbyEmail = (email) => {
     return usersRepository.getUsers([['email', email]], 'false', 1)
         .then((userDetails) => {
-            if(!userDetails) {
+            if(!userDetails || userDetails.length == 0) {
                 return false
             }
             return true
@@ -47,6 +47,22 @@ exports.getUserbyEmail = (email) => {
             })
         })
 }
+
+exports.getUsersByIdList = (idList) => {
+    return usersRepository.getUSersByIdList(idList)
+        .catch((error) => {
+            if(error.code && error.message) {
+                console.error(`[ERROR] ${error.code} - ${error.message}`)
+            } else { console.error(`[ERROR] ${error}`) }
+            throw({
+                statusCode: 500,
+                errorCode: "Internal Error",
+                errorData: "Contact administrator"
+            })
+        })
+}
+
+
 
 exports.createNorthernUser = async (username, email, password, latitude, longitude, language) => {
     //TODO: hash the password

@@ -28,14 +28,14 @@ exports.errors = function (res, errors) {
             }
         }
     }else {
-        response.statusCode = errors.statusCode;
+        response.statusCode = errors.statusCode || 500;
         response.errors = [
             {
-                errorCode: errors.errorCode,
-                errorData: errors.errorData
+                errorCode: errors.errorCode || "Internal Error",
+                errorData: errors.errorData || "Contact Administrator"
             }
         ];
     }   
-
+    console.error(`[ERROR] ${errors}`)
     res.status(response.statusCode).send(response);
 }
