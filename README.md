@@ -52,3 +52,18 @@ const processSouthern = (data) => {
 ### Asumptions
 
 - To have a friend you must first ask for it and then the other user need to accept you (in database a column named status controls this)
+
+
+#### Installation
+
+Just install the node modules and then launch the server
+
+```
+npm install
+node server.js
+```
+
+You need to create a mysql schema, you can use the script located in utils/createDatabase.js
+It also has an option to populate the tables with fake data.
+
+You can view the API documentation in https://valkiriann.github.io/Social-Network-POC/
