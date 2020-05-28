@@ -16,3 +16,16 @@ exports.getFriendsList = async (userId) => {
     }
     return usersService.getUsersByIdList(friendsIds.join());
 }
+
+exports.getFriendsCount = async (userId) => {
+    if(!userId || isNaN(userId)) {
+        //TODO: search it in third party api --when no results found
+        throw({
+            statusCode: 400,
+            errorCode: "Invalid params",
+            errorData: "One or more required params are missing"
+        })
+    }
+    let friendsIds = await friendsService.getFriendsIds(userId);
+    return friendsIds.length;
+}

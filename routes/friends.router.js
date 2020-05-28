@@ -13,7 +13,7 @@ router.get('/list', function(req,res){
 
 router.get('/count', function(req,res){
     //should use jsonwebtokenlogin
-    return friendsController.getUserDetails(req.query.userId)
+    return friendsController.getFriendsCount(req.query.userId)
         .then(data => responseUtils.success(res, data))
         .catch(error => responseUtils.errors(res, error))
 });
